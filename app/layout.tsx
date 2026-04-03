@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Nunito } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
+import { Toaster } from 'react-hot-toast'
 import './globals.css'
 
 const _nunito = Nunito({ subsets: ["latin"], weight: ["400", "600", "700", "800"] });
@@ -37,6 +38,7 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         {children}
+        <Toaster position="top-center" />
         <Analytics />
       </body>
     </html>

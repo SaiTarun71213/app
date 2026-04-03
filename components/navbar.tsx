@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { Menu, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import {
@@ -13,9 +13,11 @@ import {
   SheetTrigger,
 } from "@/components/ui/sheet"
 import { cn } from "@/lib/utils"
+import { createClient } from "@/lib/supabase/client"
 
 const navLinks = [
   { href: "/", label: "Home" },
+  { href: "/about", label: "About" },
   { href: "/admissions", label: "Admissions" },
   { href: "/contact", label: "Contact" },
   { href: "/login", label: "Login" },
@@ -24,6 +26,32 @@ const navLinks = [
 export function Navbar() {
   const pathname = usePathname()
   const [isOpen, setIsOpen] = useState(false)
+  const [authLoaded, setAuthLoaded] = useState(false)
+  const [user, setUser] = useState<{ id: string } | null>(null)
+
+  useEffect(() => {
+    let ignore = false
+
+    async function loadAuth() {
+      try {
+        const supabase = createClient()
+        const { data } = await supabase.auth.getUser()
+        if (!ignore) setUser(data.user ? { id: data.user.id } : null)
+      } catch {
+        if (!ignore) setUser(null)
+      } finally {
+        if (!ignore) setAuthLoaded(true)
+      }
+    }
+
+    void loadAuth()
+
+    return () => {
+      ignore = true
+    }
+  }, [])
+
+  const showLogin = authLoaded && !user
 
   return (
     <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -37,7 +65,9 @@ export function Navbar() {
 
         {/* Desktop Navigation */}
         <div className="hidden items-center gap-6 md:flex">
-          {navLinks.map((link) => (
+          {navLinks
+            .filter((link) => (link.href === "/login" ? showLogin : true))
+            .map((link) => (
             <Link
               key={link.href}
               href={link.href}
@@ -74,7 +104,9 @@ export function Navbar() {
               </SheetTitle>
             </SheetHeader>
             <div className="mt-6 flex flex-col gap-4">
-              {navLinks.map((link) => (
+              {navLinks
+                .filter((link) => (link.href === "/login" ? showLogin : true))
+                .map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
