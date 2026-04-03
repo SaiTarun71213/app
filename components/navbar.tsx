@@ -18,6 +18,7 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/admissions", label: "Admissions" },
   { href: "/contact", label: "Contact" },
+  { href: "/login", label: "Login" },
 ]
 
 export function Navbar() {

@@ -1,39 +1,31 @@
-import { createServerClient } from '@supabase/ssr'
+import { createClient } from '@supabase/supabase-js'
 import { NextResponse, type NextRequest } from 'next/server'
 
 type UserRole = 'admin' | 'teacher' | 'parent'
 
 export async function updateSession(request: NextRequest) {
-  let supabaseResponse = NextResponse.next({
+  const supabaseResponse = NextResponse.next({
     request,
   })
 
-  const supabase = createServerClient(
+  const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    {
-      cookies: {
-        getAll() {
-          return request.cookies.getAll()
-        },
-        setAll(cookiesToSet) {
-          cookiesToSet.forEach(({ name, value }) =>
-            request.cookies.set(name, value),
-          )
-          supabaseResponse = NextResponse.next({
-            request,
-          })
-          cookiesToSet.forEach(({ name, value, options }) =>
-            supabaseResponse.cookies.set(name, value, options),
-          )
-        },
-      },
-    },
   )
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  // Get the access token from cookies
+  const accessToken = request.cookies.get('sb-access-token')?.value
+  const refreshToken = request.cookies.get('sb-refresh-token')?.value
+
+  let user = null
+
+  if (accessToken && refreshToken) {
+    const { data } = await supabase.auth.setSession({
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    })
+    user = data.user
+  }
 
   const pathname = request.nextUrl.pathname
 
