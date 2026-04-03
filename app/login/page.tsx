@@ -164,6 +164,12 @@ export default function LoginPage() {
           </Card>
 
           <p className="text-center text-sm text-muted-foreground">
+            Don&apos;t have an account?{' '}
+            <Link href="/signup" className="text-primary hover:underline font-medium">
+              Sign up
+            </Link>
+          </p>
+          <p className="text-center text-sm text-muted-foreground mt-2">
             <Link href="/" className="hover:text-primary underline underline-offset-4">
               Back to Home
             </Link>
