@@ -29,20 +29,28 @@ export default function LoginPage() {
     setIsLoading(true)
 
     try {
+      console.log('[v0] Attempting login with:', email)
+      
       const { data: authData, error: authError } = await supabase.auth.signInWithPassword({
         email,
         password,
       })
 
+      console.log('[v0] Auth response:', { authData, authError })
+
       if (authError) {
-        toast.error('Invalid email or password')
+        console.log('[v0] Auth error:', authError.message)
+        toast.error(authError.message || 'Invalid email or password')
         return
       }
 
       if (!authData.user) {
+        console.log('[v0] No user in auth data')
         toast.error('Invalid email or password')
         return
       }
+
+      console.log('[v0] User authenticated:', authData.user.id)
 
       // Get user role from profiles table
       const { data: profile, error: profileError } = await supabase
@@ -51,10 +59,23 @@ export default function LoginPage() {
         .eq('id', authData.user.id)
         .single()
 
-      if (profileError || !profile) {
-        toast.error('Unable to fetch user profile')
+      console.log('[v0] Profile response:', { profile, profileError })
+
+      if (profileError) {
+        console.log('[v0] Profile error:', profileError.message)
+        // If no profile exists, default to parent role
+        toast.info('Redirecting to parent dashboard...')
+        router.push('/parent/dashboard')
         return
       }
+
+      if (!profile) {
+        console.log('[v0] No profile found, defaulting to parent')
+        router.push('/parent/dashboard')
+        return
+      }
+
+      console.log('[v0] User role:', profile.role)
 
       // Redirect based on role
       switch (profile.role) {
@@ -68,10 +89,12 @@ export default function LoginPage() {
           router.push('/parent/dashboard')
           break
         default:
-          toast.error('Invalid user role')
+          console.log('[v0] Unknown role, defaulting to parent')
+          router.push('/parent/dashboard')
       }
-    } catch {
-      toast.error('Invalid email or password')
+    } catch (error) {
+      console.log('[v0] Catch error:', error)
+      toast.error('An error occurred during login')
     } finally {
       setIsLoading(false)
     }
