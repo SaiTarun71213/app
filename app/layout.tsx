@@ -1,14 +1,13 @@
 import type { Metadata } from 'next'
-import { Geist, Geist_Mono } from 'next/font/google'
+import { Nunito } from 'next/font/google'
 import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 
-const _geist = Geist({ subsets: ["latin"] });
-const _geistMono = Geist_Mono({ subsets: ["latin"] });
+const _nunito = Nunito({ subsets: ["latin"], weight: ["400", "600", "700", "800"] });
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
+  title: 'Little Stars Playschool - Nurturing Young Minds',
+  description: 'Little Stars Playschool provides a safe, nurturing environment where children learn through play, creativity, and exploration. Enroll your child today!',
   generator: 'v0.app',
   icons: {
     icon: [
