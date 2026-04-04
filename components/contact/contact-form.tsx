@@ -46,10 +46,9 @@ export function ContactForm() {
       const { error } = await supabase.from("contact_messages").insert([
         {
           name: formData.name,
-          email: formData.email,
-          phone: formData.phone || null,
-          subject: formData.subject,
-          message: formData.message,
+          phone: formData.phone,
+          message:
+            `Email: ${formData.email}\nSubject: ${formData.subject}\n\n${formData.message}`,
         },
       ])
 
@@ -128,7 +127,7 @@ export function ContactForm() {
 
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="phone">Phone Number (Optional)</Label>
+              <Label htmlFor="phone">Phone Number *</Label>
               <Input
                 id="phone"
                 name="phone"
@@ -136,6 +135,7 @@ export function ContactForm() {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="+91 98765 43210"
+                required
               />
             </div>
             <div className="flex flex-col gap-2">

@@ -13,7 +13,8 @@ import { CheckCircle, AlertCircle } from "lucide-react"
 interface FormData {
   parent_name: string
   child_name: string
-  child_age: string
+  child_dob: string
+  age_group: "nursery" | "lkg" | "ukg" | ""
   email: string
   phone: string
   message: string
@@ -23,7 +24,8 @@ export function EnquiryForm() {
   const [formData, setFormData] = useState<FormData>({
     parent_name: "",
     child_name: "",
-    child_age: "",
+    child_dob: "",
+    age_group: "",
     email: "",
     phone: "",
     message: "",
@@ -49,7 +51,8 @@ export function EnquiryForm() {
         {
           parent_name: formData.parent_name,
           child_name: formData.child_name,
-          child_age: parseInt(formData.child_age),
+          child_dob: formData.child_dob,
+          age_group: formData.age_group,
           email: formData.email,
           phone: formData.phone,
           message: formData.message || null,
@@ -64,7 +67,8 @@ export function EnquiryForm() {
       setFormData({
         parent_name: "",
         child_name: "",
-        child_age: "",
+        child_dob: "",
+        age_group: "",
         email: "",
         phone: "",
         message: "",
@@ -131,19 +135,40 @@ export function EnquiryForm() {
 
           <div className="grid gap-6 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
-              <Label htmlFor="child_age">Child&apos;s Age (in years) *</Label>
+              <Label htmlFor="child_dob">Child&apos;s Date of Birth *</Label>
               <Input
-                id="child_age"
-                name="child_age"
-                type="number"
-                min="1"
-                max="6"
-                value={formData.child_age}
+                id="child_dob"
+                name="child_dob"
+                type="date"
+                value={formData.child_dob}
                 onChange={handleChange}
-                placeholder="e.g., 3"
                 required
               />
             </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="age_group">Applying for Class *</Label>
+              <select
+                id="age_group"
+                name="age_group"
+                value={formData.age_group}
+                onChange={(e) =>
+                  setFormData((prev) => ({
+                    ...prev,
+                    age_group: e.target.value as "nursery" | "lkg" | "ukg" | "",
+                  }))
+                }
+                className="border-input focus-visible:border-ring focus-visible:ring-ring/50 h-9 rounded-md border bg-transparent px-3 py-1 text-sm shadow-xs outline-none focus-visible:ring-[3px]"
+                required
+              >
+                <option value="">Select class</option>
+                <option value="nursery">Nursery</option>
+                <option value="lkg">LKG</option>
+                <option value="ukg">UKG</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="grid gap-6 sm:grid-cols-2">
             <div className="flex flex-col gap-2">
               <Label htmlFor="email">Email Address *</Label>
               <Input
